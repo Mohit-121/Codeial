@@ -1,8 +1,8 @@
 module.exports.home = function(req,res){
     // read the cookie
-    console.log(req.cookies);
+    // console.log(req.cookies);
     // change the cookie
-    res.cookie('user_id',25);
+    // res.cookie('user_id',25);
     return res.render('home',{
         title:"Home"
     });
