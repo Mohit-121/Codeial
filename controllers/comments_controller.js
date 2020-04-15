@@ -10,7 +10,7 @@ module.exports.create = function(req,res){
                 user: req.user._id
             },function(err,comment){
                 if(err){console.log('error in adding comments');return;}
-                post.comment.push(comment);
+                post.comments.push(comment);
                 post.save();
                 res.redirect('/');
             });
