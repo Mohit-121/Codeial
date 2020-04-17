@@ -11,25 +11,15 @@ module.exports.profile = function(req,res){
 
 module.exports.update = function(req,res){
     if(req.user.id == req.params.id){
-        User.findById(req.params.id,function(err,user){
-            // console.log(user);
-        });
-        console.log(req.body);
         User.findByIdAndUpdate(req.params.id,req.body,function(err,user){
-            console.log(user,req.params.id);
+            req.flash('Details Successfully Updated!');
             return res.redirect('back');
         });
     }else{
+        req.flash('error','You are not allowed to Update details!');
         return res.status(401).send('Unauthorized');
     }
 }
-
-module.exports.post= function(req,res){
-    return res.render('users_profile',{
-        title:'Users Post'
-    });
-}
-
 
 // Render the sign up page
 module.exports.signUp=function(req,res){
@@ -55,17 +45,28 @@ module.exports.signIn=function(req,res){
 // get the sign up data
 module.exports.create = function(req,res){
     if(req.body.password!=req.body.confirm_password){
+        req.flash('error',"Password and confirm password don't match!");
         return res.redirect('back');
     }
 
     User.findOne({email: req.body.email},function(err,user){
-        if(err){console.log('Error in finding user in signing up'); return;}
+        if(err){
+            req.flash('error',err);
+            return;
+        }
         if(!user){
             User.create(req.body,function(err,user){
-                if(err){console.log('Error in creating user while signing up'); return;}
+                if(err){
+                    req.flash('error','Error in creating user while signing up');
+                    return;
+                }
+                req.flash('success','Created User successfully');
                 return res.redirect('/users/sign-in');
             });
-        }else return res.redirect('back');
+        }else{
+            req.flash('error','User already registered with this email!');
+            return res.redirect('back');
+        }
     });
 }
 
