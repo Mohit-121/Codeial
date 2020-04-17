@@ -28,7 +28,6 @@ module.exports.post= function(req,res){
     return res.render('users_profile',{
         title:'Users Post'
     });
-    // res.end('<h1>User liked</h1>');
 }
 
 
