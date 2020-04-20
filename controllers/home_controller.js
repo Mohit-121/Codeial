@@ -13,6 +13,10 @@ module.exports.home = async function(req,res){
             }
         });
 
+        for(let i=0;i<posts.length;i++){
+            posts[i].comments.sort((a,b) => b.createdAt-a.createdAt);
+        }
+
         let users = await User.find({});
 
         return res.render('home',{

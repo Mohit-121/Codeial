@@ -12,8 +12,9 @@
                     let newPost = newPostDom(data.data.post);
                     $('#posts-list-container>ul').prepend(newPost);
                     deletePost($(' .delete-post-button',newPost));
+                    notifications('success',data.message);
                 },error: function(err){
-                    console.log(err.responseText);
+                    notifications('error',err.responseText);
                 }
             });
         });
@@ -54,15 +55,30 @@
                 url: $(deleteLink).prop('href'),
                 success: function(data){
                     $(`#post-${data.data.post_id}`).remove();
+                    notifications('success',data.message);
                 },error: function(err){
-                    console.log(err.responseText);
+                    notifications('error',err.responseText);
                 }
             });
         });
     }
 
+    // Method to loop over previously created Post and call DeletePost on it
+    $('#posts-list-container>ul li').each(function(){
+        deletePost($(' .delete-post-button',$(this)));
+    });
 
+    // Method to call Noty Notifications
+    let notifications = function(type,text){
+        new Noty({
+            theme: 'relax',
+            text: text,
+            type: type,
+            layout: 'topRight',
+            timeout: 1000
+        }).show();
+    }
 
-
+    // Call Create Post
     createPost();
 }

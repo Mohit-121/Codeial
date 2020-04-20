@@ -12,7 +12,19 @@ module.exports.create = async function(req,res){
             });
             post.comments.push(comment);
             post.save();
-            req.flash('success','Comment Published!');
+
+            comment = await Comment.findById(comment.id).populate({path:'user',select:'name'});
+            
+            if(req.xhr){
+                return res.status(200).json({
+                    data: {
+                        comment: comment
+                    },
+                    message: "Comment Created!"
+                });
+            }
+
+            // req.flash('success','Comment Published!');
             res.redirect('/');
         }
     }catch(err){
@@ -25,8 +37,19 @@ module.exports.destroy = async function(req,res){
     try{
         let comment = await Comment.findById(req.params.id);
         if(comment.user == req.user.id){
-            let post = await Post.findByIdAndUpdate(comment.post,{$pull: {comments: req.params.id}});
+            let postId = comment.post;
             comment.remove();
+            let post = await Post.findByIdAndUpdate(postId,{$pull: {comments: req.params.id}});
+
+            if(req.xhr){
+                return res.status(200).json({
+                    data:{
+                        comment: comment
+                    },
+                    message:"Comment deleted!"
+                });
+            }
+
             req.flash('success','Comment Deleted Successfully!');
             return res.redirect('back');
         }
