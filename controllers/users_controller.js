@@ -1,4 +1,6 @@
 const User=require('../models/user');
+const fs = require('fs');
+const path = require('path');
 
 module.exports.profile = function(req,res){
     User.findById(req.params.id,function(err,user){
@@ -9,16 +11,44 @@ module.exports.profile = function(req,res){
     });
 }
 
-module.exports.update = function(req,res){
+module.exports.update = async function(req,res){
     if(req.user.id == req.params.id){
-        User.findByIdAndUpdate(req.params.id,req.body,function(err,user){
-            req.flash('success','Details Successfully Updated!');
+        try{
+            let user = await User.findById(req.params.id);
+            let prevavatar = user.avatar;
+            User.uploadedAvatar(req,res,function(err){
+                if(err){console.log("*****MULTER ERR: ",err)}
+                // console.log(req.body.name,req.body.email,req.body.file);
+                user.name=req.body.name;
+                user.email=req.body.email;
+                if(req.file){
+                    if(user.avatar && fs.existsSync(path.join(__dirname,'..',user.avatar))){
+                        fs.unlinkSync(path.join(__dirname,'..',user.avatar));
+                    }
+                    // To set the path of the current user avatar
+                    user.avatar = User.avatarPath + '/' + req.file.filename;
+                }
+                user.save();
+                if(req.xhr){
+                    return res.status(200).json({
+                        data:{
+                            user: user,
+                            prevavatar: prevavatar
+                        },
+                        message: "Success!"
+                    });
+                }
+                return res.redirect('back');
+            });
+            
+        }catch(err){
+            req.flash('error',err);
             return res.redirect('back');
-        });
+        }
     }else{
-        req.flash('error','You are not allowed to Update details!');
-        return res.status(401).send('Unauthorized');
-    }
+            req.flash('error','You are not allowed to Update details!');
+            return res.status(401).send('Unauthorized');
+        }
 }
 
 // Render the sign up page

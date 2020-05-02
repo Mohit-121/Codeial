@@ -1,13 +1,22 @@
 <link rel="stylesheet" href="/css/user_profile.css">
-<h1>Codeial / Profile Page</h1>
+<img src="<%= user.avatar %>" alt="<%= user.name%>" width="100" >
 
 <% if(user.id == profile_user.id){ %>
-    <form action="/users/update/<%= profile_user.id %>" method="POST">
+    <form action="/users/update/<%= profile_user.id %>" method="POST" enctype="multipart/form-data" id="update-form">
         <input type="text" name="name" placeholder="Your Name" value="<%= profile_user.name %>" required>
         <input type="email" name="email" placeholder="Your Email" value="<%= profile_user.email %>" required>
+        <input type="file" name="avatar" id="avatar-input" placeholder="Profile Picture">
+        <span id="image-preview"></span>
+        <button id="preview">Preview</button>
         <input type="submit" value="Update">
     </form>
 <% }else{ %>
     <p><%= profile_user.name %></p>
     <p><%= profile_user.email %></p>
 <% } %>
+<script>
+    var userIdFunction = function(){
+        return '<%= profile_user.id %>'
+    }
+</script>
+<script src="/js/avatar_preview.js"></script>
