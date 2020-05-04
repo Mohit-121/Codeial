@@ -14,7 +14,7 @@
                         let form_parent=$(form).parent()[0];
                         $(' .post-comments-list>ul',form_parent).prepend(newComment);
                         notifications('success',data.message);
-                        deletePost($(' .delete-comment-button',newComment));
+                        deleteComment($(' .delete-comment-button',newComment));
                     },error: function(err){
                         notifications('error',err.responseText);
                     }
@@ -41,7 +41,7 @@
     }
 
     // Method to delete a Post from DOM
-    let deletePost = function(deleteLink){
+    let deleteComment = function(deleteLink){
         $(deleteLink).click(function(e){
             e.preventDefault();
             $.ajax({
@@ -59,7 +59,7 @@
 
     // Delete any other comments when clicked on delete button
     $('.post-comments .post-comments-list>ul li').each(function(){
-        deletePost($(' .delete-comment-button',$(this)));
+        deleteComment($(' .delete-comment-button',$(this)));
     });
 
   // Method to call Noty Notifications
