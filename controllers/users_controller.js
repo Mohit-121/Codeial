@@ -1,6 +1,9 @@
 const User=require('../models/user');
+const ResetPasswordToken = require('../models/reset_password_token');
 const fs = require('fs');
 const path = require('path');
+const resetPasswordMailer = require('../mailers/forgot_password');
+const crypto = require('crypto');
 
 module.exports.profile = function(req,res){
     User.findById(req.params.id,function(err,user){
@@ -9,6 +12,83 @@ module.exports.profile = function(req,res){
             profile_user:user
         });
     });
+}
+
+// For forgot password
+module.exports.forgotPassword = function(req,res){
+    return res.render('forgot_password',{
+        title:'Forgot password'
+    });
+}
+
+// for reset password
+module.exports.resetPassword = function(req,res){
+    // Find user with the given email
+    User.findOne({email: req.body.email},function(err,user){
+        if(err){req.flash('error',err);return;}
+        if(!user){
+            // If user not present go to sign-up page
+            req.flash('error',"This email id doens't exist!!!");
+            return res.redirect('/users/sign-up');
+        }else{
+            // Else find the user in reset_password_token
+            ResetPasswordToken.findOne({user:user, isValid:true},function(err,userRef){
+                if(err){req.flash('error',err);return;}
+                req.flash('success','Email Sent successfully');
+                if(userRef){
+                    // If user is present and id is valid then send the same accessToken
+                    console.log('UserRef already present',userRef.accesstoken);
+                    resetPasswordMailer.resetPassword(user,userRef.accesstoken);
+                }else{
+                    // Else create accessToken
+                    let accesstoken = crypto.randomBytes(20).toString('hex');
+                    ResetPasswordToken.create({user:user,accesstoken:accesstoken,isValid:true},function(err,newUserRef){
+                        if(err){console.log('error in creating tokens',err);return;}
+                        console.log('User Token created successfully',newUserRef);
+                        resetPasswordMailer.resetPassword(user,newUserRef.accesstoken);
+                    });
+                }
+            });
+            req.flash('success','Sent Mail Successfully');
+            return res.redirect('back');
+        }
+    });
+}
+
+// reset password page
+module.exports.resetPasswordPage = async function(req,res){
+    let userRef = await ResetPasswordToken.findOne({accesstoken: req.params.id});
+    return res.render('reset_password',{
+        title:'Reset Password',
+        accessToken: req.params.id,
+        isValid: userRef.isValid
+    });
+}
+
+// update password
+module.exports.updatePassword = async function(req,res){
+    console.log(req.params.id, req.body);
+    console.log('Inside update password');
+    if(req.body.password==req.body.confirm_password){
+        // Check if password and confirm password is same, then find the user with access token
+        // If found then reset password, else print Invalid token
+        let userRef = await ResetPasswordToken.findOne({accesstoken:req.params.id, isValid:true});
+        if(userRef){
+            userRef = await userRef.populate('user').execPopulate();
+            userRef.isValid = false;
+            userRef.user.password = req.body.password;
+            userRef.save();
+            userRef.user.save();
+            req.flash('success','Password changed successfully!!!');
+            return res.redirect('/users/sign-in');
+        }else{
+            req.flash('error','Invalid Access Token');
+        }
+    }else{
+        // Else return passwords don't match
+        req.flash('error','Passwords do not match!!!');
+    }
+    return res.redirect('back');
 }
 
 module.exports.update = async function(req,res){
