@@ -21,12 +21,10 @@
     <main id="layout-main">
         <%- body %>
     </main>
-    
     <%- include('_footer'); %>
     <%- script %>
     <script>
         <% if(flash.success && flash.success.length>0){ %> 
-            console.l
             new Noty({
                 theme: 'relax',
                 text: "<%= flash.success %>",

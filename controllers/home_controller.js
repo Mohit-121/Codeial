@@ -9,8 +9,10 @@ module.exports.home = async function(req,res){
         .populate({
             path:'comments',
             populate:{
-                path:'user'
+                path:'user likes'
             }
+        }).populate({
+            path:'likes'
         });
 
         for(let i=0;i<posts.length;i++){
@@ -19,10 +21,23 @@ module.exports.home = async function(req,res){
 
         let users = await User.find({});
 
+
+        let cur_user=null;
+
+        if(req.user){
+            cur_user = await User.findById({_id:req.user._id}).populate({
+                path:'friendships',
+                populate: {
+                    path:'from_user to_user'
+                }
+            });
+        }
+
         return res.render('home',{
             title: "Home",
             posts: posts,
-            all_users: users
+            all_users: users,
+            cur_user: cur_user
         });
     }catch(err){
         console.log("Error",err);

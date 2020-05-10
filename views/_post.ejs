@@ -8,6 +8,13 @@
         <%= post.content %>
         <br>
         <small> <%= post.user.name %> </small>
+        <small>&ensp;&ensp;<span><%= post.likes.length %></span>&ensp;
+            <% if(locals.user){ %>
+            <a href="/likes/toggle/?id=<%= post._id %>&type=Post" onclick="toggleLike(this)">Like</a>
+            <% }else{ %>
+                Like
+            <% }  %>
+        </small>
     </p>
     <div class="post-comments">
         <% if(locals.user){ %>

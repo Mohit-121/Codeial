@@ -1,0 +1,26 @@
+<% if(locals.user){ %>
+    <div id="user-chat-box">
+        <ul id="chat-messages-list">
+            <li class="other-message">
+                <% if(locals.user.name=='Mohit'){ %>
+                <sup>~Hacker</sup>
+                <% }else{ %>
+                <sup>~Mohit</sup>
+                <% } %>
+                <span>
+                    Other's message is rocking the floor, do you think it is good
+                </span>
+            </li>
+            <li class="self-message">
+                <sup>~<%= locals.user.name %></sup>
+                <span>
+                    Self Message
+                </span>
+            </li>
+        </ul>
+        <div id="chat-message-input-container">
+            <input id="chat-message-input" type="text" name="message" placeholder="Type your message...">
+            <button type="submit" id="send-message">Send</button>
+        </div>
+    </div>
+<% } %>

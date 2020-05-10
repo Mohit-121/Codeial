@@ -36,6 +36,9 @@
                         <small>
                             ${ comment.user.name }
                         </small>
+                        <small>&ensp;&ensp;<span>${ comment.likes.length }</span>&ensp;
+                        <a href="/likes/toggle/?id=${ comment._id }&type=Comment" onclick="toggleLike(this)">Like</a>
+                        </small>
                     </p>
                 </li>`);
     }

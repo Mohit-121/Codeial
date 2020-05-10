@@ -29,6 +29,9 @@
                         ${ post.content }
                         <br>
                         <small> ${ post.user.name } </small>
+                        <small>&ensp;&ensp;<span>${ post.likes.length }</span>&ensp;
+                        <a href="/likes/toggle/?id=${post._id}&type=Post" onclick="toggleLike(this)">Like</a>
+                        </small>
                     </p>
                     <div class="post-comments">
                             <form action="/comments/create" method="POST">

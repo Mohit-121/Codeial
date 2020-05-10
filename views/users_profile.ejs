@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="/css/user_profile.css">
-<img src="<%= user.avatar %>" alt="<%= user.name%>" width="100" >
+<img src="<%= profile_user.avatar %>" alt="<%= user.name%>" width="100" >
 
 <% if(user.id == profile_user.id){ %>
     <form action="/users/update/<%= profile_user.id %>" method="POST" enctype="multipart/form-data" id="update-form">
@@ -13,6 +13,9 @@
 <% }else{ %>
     <p><%= profile_user.name %></p>
     <p><%= profile_user.email %></p>
+    <form action="/friendships/toggle/?from_id=<%= user._id %>&to_id=<%= profile_user._id %>" method="POST" id="add-friend-form">
+        <button type="submit"><%= isFriend %></button>
+    </form>
 <% } %>
 <script>
     var userIdFunction = function(){
@@ -20,3 +23,4 @@
     }
 </script>
 <script src="/js/avatar_preview.js"></script>
+<script src="/js/toggle_friends.js"></script>
