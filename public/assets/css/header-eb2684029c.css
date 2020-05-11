@@ -1,0 +1,18 @@
+#header {
+  display: flex;
+  justify-content: space-between;
+  background-color: #128cdd; }
+  #header h1 {
+    color: white;
+    margin: 5px; }
+  #header ul {
+    display: flex;
+    color: white;
+    margin: 5px; }
+    #header ul li {
+      padding: 10px;
+      list-style: none; }
+      #header ul li a {
+        text-decoration: none;
+        color: white;
+        font-size: 20px; }
